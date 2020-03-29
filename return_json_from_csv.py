@@ -9,8 +9,8 @@ from src.script_pandas import *
 app = Flask(__name__)
 
 root_dir = os.path.dirname(os.path.abspath(__file__))
-CSV_FOLDER = f'{root_dir}\\uploaded_csv_files'
-JSON_FOLDER = f'{root_dir}\\returned_json_files'
+CSV_FOLDER = f'{root_dir}/uploaded_csv_files'
+JSON_FOLDER = f'{root_dir}/returned_json_files'
 
 app.config['UPLOAD_FOLDER'] = CSV_FOLDER
 
