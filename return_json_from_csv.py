@@ -9,12 +9,21 @@ import pandas as pd
 
 app = Flask(__name__)
 
-root_dir = os.path.dirname(os.path.abspath(__file__))
-CSV_FOLDER = f'{root_dir}/uploaded_csv_files'
-JSON_FOLDER = f'{root_dir}/returned_json_files'
+# root_dir = os.path.dirname(os.path.abspath(__file__))
+# CSV_FOLDER = f'{root_dir}/uploaded_csv_files'
+# JSON_FOLDER = f'{root_dir}/returned_json_files'
+# app.config['UPLOAD_FOLDER'] = CSV_FOLDER
+# app.config['JSON_FOLDER'] = JSON_FOLDER
 
-app.config['UPLOAD_FOLDER'] = CSV_FOLDER
-app.config['JSON_FOLDER'] = JSON_FOLDER
+csv_uploads_dir = os.path.join(app.instance_path, 'csv_uploads')
+json_uploads_dir = os.path.join(app.instance_path, 'json_uploads')
+
+os.makedirs(csv_uploads_dir, exists_ok=True)
+os.makedirs(json_uploads_dir, exists_ok=True)
+
+app.config['csv_uploads_dir'] = csv_uploads_dir
+app.config['json_uploads_dir'] = json_uploads_dir
+
 ALLOWED_EXTENSIONS = {'csv'}
 
 
@@ -42,19 +51,19 @@ def upload_file():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
 
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            file.save(os.path.join(app.config['csv_uploads_dir'], filename))
 
-            files = [f for f in listdir(app.config['UPLOAD_FOLDER']) if isfile(join(app.config['UPLOAD_FOLDER'], f))]
+            files = [f for f in listdir(app.config['csv_uploads_dir']) if isfile(join(app.config['csv_uploads_dir'], f))]
 
-            json_data = get_json_data(os.path.join(app.config['UPLOAD_FOLDER'], files[0]))
+            json_data = get_json_data(os.path.join(app.config['csv_uploads_dir'], files[0]))
             response = Response(headers={'Access-Control-Allow-Origin': '*'})
             response.set_data(json.dumps(json_data))
 
-            filename = get_filename(os.path.join(app.config['UPLOAD_FOLDER'], files[0]))
+            filename = get_filename(os.path.join(app.config['csv_uploads_dir'], files[0]))
             json_filename = filename + '.json'
 
-            delete_file(os.path.join(app.config['UPLOAD_FOLDER'], files[0]))
-            delete_file(os.path.join(app.config['JSON_FOLDER'], json_filename))
+            delete_file(os.path.join(app.config['csv_uploads_dir'], files[0]))
+            delete_file(os.path.join(app.config['json_uploads_dir'], json_filename))
 
             return json_data
     else:
