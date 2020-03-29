@@ -15,11 +15,19 @@ app = Flask(__name__)
 # app.config['UPLOAD_FOLDER'] = CSV_FOLDER
 # app.config['JSON_FOLDER'] = JSON_FOLDER
 
+
+
+
+
 csv_uploads_dir = os.path.join(app.instance_path, 'csv_uploads')
 json_uploads_dir = os.path.join(app.instance_path, 'json_uploads')
 
-os.makedirs(csv_uploads_dir)
-os.makedirs(json_uploads_dir)
+try:
+    os.makedirs(csv_uploads_dir)
+    os.makedirs(json_uploads_dir)
+except FileExistsError:
+    pass
+
 
 app.config['csv_uploads_dir'] = csv_uploads_dir
 app.config['json_uploads_dir'] = json_uploads_dir
