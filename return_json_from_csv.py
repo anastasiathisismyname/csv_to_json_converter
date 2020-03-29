@@ -3,7 +3,8 @@ from werkzeug.utils import secure_filename
 import os.path
 from os import listdir
 from os.path import isfile, join
-from src.script_pandas import *
+import json
+import pandas as pd
 
 
 app = Flask(__name__)
@@ -13,7 +14,7 @@ CSV_FOLDER = f'{root_dir}/uploaded_csv_files'
 JSON_FOLDER = f'{root_dir}/returned_json_files'
 
 app.config['UPLOAD_FOLDER'] = CSV_FOLDER
-
+app.config['JSON_FOLDER'] = JSON_FOLDER
 ALLOWED_EXTENSIONS = {'csv'}
 
 
@@ -43,18 +44,43 @@ def upload_file():
 
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
-            files = [f for f in listdir(CSV_FOLDER) if isfile(join(CSV_FOLDER, f))]
+            files = [f for f in listdir(app.config['UPLOAD_FOLDER']) if isfile(join(app.config['UPLOAD_FOLDER'], f))]
 
             json_data = get_json_data(os.path.join(app.config['UPLOAD_FOLDER'], files[0]))
             response = Response(headers={'Access-Control-Allow-Origin': '*'})
             response.set_data(json.dumps(json_data))
 
-            delete_file(os.path.join(CSV_FOLDER, files[0]))
-            delete_file(os.path.join(JSON_FOLDER, files[0]))
+            filename = get_filename(os.path.join(app.config['UPLOAD_FOLDER'], files[0]))
+            json_filename = filename + '.json'
+
+            delete_file(os.path.join(app.config['UPLOAD_FOLDER'], files[0]))
+            delete_file(os.path.join(app.config['JSON_FOLDER'], json_filename))
 
             return json_data
     else:
         return render_template('index.html')
+
+
+def get_filename(path):
+    filename = path.split('/')[-1].split('.')[0]
+    return filename
+
+
+def get_json_data(path):
+    df = pd.read_csv(path)
+
+    folder_path = "/".join(path.split('/')[:-1])
+    filename = get_filename(path)
+
+    json_path = folder_path + '/' + filename + '.json'
+
+    df.to_json(json_path)
+    with open(json_path) as f:
+        return json.loads(f.read())
+
+
+def delete_file(path):
+    os.remove(path)
 
 
 port = int(os.environ.get('PORT', 5000))
