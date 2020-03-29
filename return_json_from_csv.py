@@ -4,6 +4,9 @@ import os.path
 from os import listdir
 from os.path import isfile, join
 from src.script_pandas import *
+import gevent
+from gevent.pywsgi import WSGIServer
+
 
 
 app = Flask(__name__)
@@ -55,3 +58,7 @@ def upload_file():
             return json_data
     else:
         return render_template('index.html')
+
+
+app_server = WSGIServer(('', 5000), app)
+app_server.serve_forever()
