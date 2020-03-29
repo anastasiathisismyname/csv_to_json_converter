@@ -8,15 +8,14 @@ from src.script_pandas import *
 
 app = Flask(__name__)
 
-
 root_dir = os.path.dirname(os.path.abspath(__file__))
-UPLOAD_FOLDER = f'{root_dir}\\uploaded_csv_files'
-json_folder = f'{root_dir}\\returned_json_files'
+CSV_FOLDER = f'{root_dir}\\uploaded_csv_files'
+JSON_FOLDER = f'{root_dir}\\returned_json_files'
 
-
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['UPLOAD_FOLDER'] = CSV_FOLDER
 
 ALLOWED_EXTENSIONS = {'csv'}
+
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -44,14 +43,14 @@ def upload_file():
 
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
-            files = [f for f in listdir(UPLOAD_FOLDER) if isfile(join(UPLOAD_FOLDER, f))]
+            files = [f for f in listdir(CSV_FOLDER) if isfile(join(CSV_FOLDER, f))]
 
             json_data = get_json_data(os.path.join(app.config['UPLOAD_FOLDER'], files[0]))
             response = Response(headers={'Access-Control-Allow-Origin': '*'})
             response.set_data(json.dumps(json_data))
 
-            delete_file(os.path.join(UPLOAD_FOLDER, files[0]))
-            delete_file(os.path.join(json_folder, files[0]))
+            delete_file(os.path.join(CSV_FOLDER, files[0]))
+            delete_file(os.path.join(JSON_FOLDER, files[0]))
 
             return json_data
     else:
