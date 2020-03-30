@@ -64,14 +64,14 @@ def get_filename(path):
 
 
 def get_json_data(path):
-    df = pd.read_csv(path)
+    df = pd.read_csv(path, index=False)
 
     folder_path = "/".join(path.split('/')[:-1])
     filename = get_filename(path)
 
     json_path = folder_path + '/' + filename + '.json'
 
-    df.to_json(json_path, index=False)
+    df.to_json(json_path)
 
     with open(json_path) as f:
         return json.loads(f.read())

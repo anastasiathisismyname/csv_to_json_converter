@@ -1,4 +1,5 @@
-The app converts received CSV file to a JSON. 
-There is an html form for uploading a file. 
-JSON is send in response.   
-7 attempt
+heroku buildpacks:clear 
+heroku buildpacks:set heroku/python
+git push heroku master
+heroku ps:scale web=1
+heroku logs -t
