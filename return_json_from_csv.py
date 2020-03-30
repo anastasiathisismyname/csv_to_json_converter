@@ -72,7 +72,7 @@ def get_json_data(path):
 
     json_path = folder_path + '/' + filename + '.json'
 
-    df.to_json(json_path)
+    df.to_json(json_path, index=False)
 
     with open(json_path) as f:
         return json.loads(f.read())
