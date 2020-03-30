@@ -59,7 +59,14 @@ def upload_file():
 
 def get_json_data(path):
     df = pd.read_csv(path, index_col=None)
-    return json.loads(df.to_json(orient='columns'))
+    json_dict = json.loads(df.to_json(orient='columns'))
+
+    result = {}
+
+    for k, v in json_dict.items():
+        result[k] = list(v.values())
+
+    return result
 
 
 def delete_file(path):
