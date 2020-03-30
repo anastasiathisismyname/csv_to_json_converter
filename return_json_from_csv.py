@@ -9,19 +9,12 @@ import pandas as pd
 
 app = Flask(__name__)
 
-# root_dir = os.path.dirname(os.path.abspath(__file__))
-# CSV_FOLDER = f'{root_dir}/uploaded_csv_files'
-# JSON_FOLDER = f'{root_dir}/returned_json_files'
-# app.config['UPLOAD_FOLDER'] = CSV_FOLDER
-# app.config['JSON_FOLDER'] = JSON_FOLDER
-
 uploads_dir = os.path.join(app.instance_path, 'uploads')
 
 try:
     os.makedirs(uploads_dir)
 except FileExistsError:
     pass
-
 
 app.config['UPLOAD_FOLDER'] = uploads_dir
 
@@ -56,7 +49,6 @@ def upload_file():
             json_data = get_json_data(os.path.join(app.config['UPLOAD_FOLDER'], files[0]))
             response = Response(headers={'Access-Control-Allow-Origin': '*'})
             response.set_data(json.dumps(json_data))
-
             filename_without_extention = get_filename(os.path.join(app.config['UPLOAD_FOLDER'], files[0]))
             json_filename = filename_without_extention + '.json'
             delete_file(os.path.join(app.config['UPLOAD_FOLDER'], csv_filename))
@@ -79,7 +71,8 @@ def get_json_data(path):
 
     json_path = folder_path + '/' + filename + '.json'
 
-    df.to_json(json_path)
+    df.to_json(json_path, index=False)
+
     with open(json_path) as f:
         return json.loads(f.read())
 
