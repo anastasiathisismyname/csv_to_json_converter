@@ -2,3 +2,4 @@ my_test_variable:
   stage: my_test
   script:
     - echo $CI_JOB_STAGE
+    - echo "this"
